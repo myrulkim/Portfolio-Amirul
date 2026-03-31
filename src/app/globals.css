@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  /* Fonts */
+  --font-sans: var(--font-titillium);
+  --font-mono: var(--font-jetbrains);
+  
+  /* Petronas Theme Colors */
+  --color-petronas: #00A19B;
+  --color-silver: #C0C0C0;
+  --color-obsidian: #050505;
+  --color-carbon: #0D0D0D;
+  --color-cockpit: #111111;
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  /* Radix / Shadcn standard mapping */
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+
+  /* Custom animations */
+  --animate-pulse-teal: pulse-teal 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-teal {
+  0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(0, 161, 155, 0.5); }
+  50% { opacity: .5; text-shadow: 0 0 20px rgba(0, 161, 155, 0.8); }
+}
+
+:root {
+  --background: #050505;
+  --foreground: #C0C0C0;
+  --card: #0D0D0D;
+  --card-foreground: #C0C0C0;
+  --popover: #0D0D0D;
+  --popover-foreground: #C0C0C0;
+  --primary: #00A19B;
+  --primary-foreground: #050505;
+  --secondary: #111111;
+  --secondary-foreground: #C0C0C0;
+  --muted: #111111;
+  --muted-foreground: #888888;
+  --accent: #111111;
+  --accent-foreground: #00A19B;
+  --destructive: #FF3333;
+  --destructive-foreground: #FFFFFF;
+  --border: #1A1A1A;
+  --input: #1A1A1A;
+  --ring: #00A19B;
+  --radius: 0.5rem;
+}
+
+/* We don't need a separate .dark mode block since the theme is forced dark */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #00A19B;
+    border-radius: 4px;
+  }
+  
+  /* Selection */
+  ::selection {
+    background: rgba(0, 161, 155, 0.3);
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  .carbon-fiber {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-color: var(--background);
+  }
+  
+  .glass {
+    @apply backdrop-blur-md bg-white/5 border border-white/10;
+  }
+}
