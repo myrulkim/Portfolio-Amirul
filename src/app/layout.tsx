@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import { Titillium_Web, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Navigation } from "@/components/layout/Navigation";
 import { Footer } from "@/components/layout/Footer";
 
-const titillium = Titillium_Web({
-  weight: ["300", "400", "600", "700", "900"],
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-titillium",
+  variable: "--font-inter",
   display: "swap",
-  style: ["normal", "italic"]
 });
 
 const jetbrains = JetBrains_Mono({
@@ -20,8 +18,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Amiru // Software Engineer",
-  description: "Silver Arrow F1-Inspired Software Engineering Portfolio",
+  title: "Amirul | Software Engineer",
+  description: "Senior Product Design & Software Engineering Portfolio",
 };
 
 export default function RootLayout({
@@ -32,10 +30,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${titillium.variable} ${jetbrains.variable} scroll-smooth`}
+      className={`${inter.variable} ${jetbrains.variable} scroll-smooth`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground tracking-wide flex flex-col antialiased">
+      <body className="min-h-screen bg-background text-foreground tracking-tight flex flex-col antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

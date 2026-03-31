@@ -4,93 +4,86 @@ import { motion } from "framer-motion";
 import { Mail, Send } from "lucide-react";
 import { IconBrandGithub, IconBrandLinkedin } from "@tabler/icons-react";
 import { Button } from "../ui/button";
+import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export function Contact() {
+  const { socials } = usePortfolioData();
+  
   return (
-    <section id="contact" className="py-24 relative bg-obsidian overflow-hidden">
-      <div className="container px-4 md:px-6 max-w-5xl mx-auto relative z-10">
+    <section id="contact" className="py-32 relative bg-pure-black overflow-hidden">
+      <div className="container px-4 md:px-6 max-w-3xl mx-auto relative z-10 text-center">
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-petronas/10 border border-petronas/30 mb-8 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-[10px] font-mono tracking-widest text-silver uppercase">Status: Open for opportunities</span>
-            </div>
-
-            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter text-white mb-6">
-              LET'S TALK <br /> <span className="text-petronas">PERFORMANCE.</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="space-y-12"
+        >
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tighter text-white">
+              Connect.
             </h2>
-            <p className="text-silver/70 font-mono text-sm leading-relaxed mb-8 max-w-md">
-              &gt; Initialize communication sequence. Whether you have a question or just want to discuss code, racing, or design—I'll get back to you at DRS speed.
+            <p className="text-apple-gray text-lg md:text-xl tracking-tight font-medium max-w-xl mx-auto leading-relaxed">
+              Whether you have a vision for a specific project or just want to discuss software engineering—I'm always open to new connections and interesting conversations.
             </p>
+          </div>
 
-            <div className="space-y-4 font-mono text-sm">
-              <a href="mailto:hello@amiru.dev" className="flex items-center gap-4 text-silver hover:text-petronas transition-colors group p-4 border border-white/5 hover:border-petronas/50 bg-[#111]">
-                <Mail className="group-hover:scale-110 transition-transform text-petronas" size={20} />
-                hello@amiru.dev
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center gap-4 text-silver hover:text-petronas transition-colors group p-4 border border-white/5 hover:border-petronas/50 bg-[#111]">
-                <IconBrandLinkedin className="group-hover:scale-110 transition-transform text-petronas" size={20} />
-                linkedin.com/in/amiru
-              </a>
-              <a href="https://github.com" target="_blank" rel="noreferrer" className="flex items-center gap-4 text-silver hover:text-petronas transition-colors group p-4 border border-white/5 hover:border-petronas/50 bg-[#111]">
-                <IconBrandGithub className="group-hover:scale-110 transition-transform text-petronas" size={20} />
-                github.com/amiru
-              </a>
-            </div>
-          </motion.div>
+          <div className="flex flex-wrap justify-center gap-8 md:gap-12 py-4">
+            <a href={`mailto:${socials.email}`} className="flex items-center gap-3 text-white hover:text-apple-blue transition-colors font-semibold tracking-tight group">
+              <Mail size={24} className="group-hover:scale-110 transition-transform" />
+              <span>Email</span>
+            </a>
+            <a href={socials.linkedin} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-white hover:text-apple-blue transition-colors font-semibold tracking-tight group">
+              <IconBrandLinkedin size={24} className="group-hover:scale-110 transition-transform" />
+              <span>LinkedIn</span>
+            </a>
+            <a href={socials.github} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-white hover:text-apple-blue transition-colors font-semibold tracking-tight group">
+              <IconBrandGithub size={24} className="group-hover:scale-110 transition-transform" />
+              <span>GitHub</span>
+            </a>
+          </div>
 
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="glass p-8 relative border-t-4 border-t-petronas shadow-2xl shadow-petronas/5"
+            className="glass p-8 md:p-12 rounded-[32px] border-white/5 shadow-2xl text-left"
           >
-            <div className="absolute top-0 right-4 transform -translate-y-1/2">
-               <div className="bg-obsidian border border-petronas px-2 py-1 text-[10px] text-petronas font-mono tracking-widest">
-                 COMMS_LINK
-               </div>
-            </div>
-
-            <form className="space-y-6 flex flex-col pt-4" onSubmit={(e) => e.preventDefault()}>
-              <div className="space-y-1">
-                <label className="text-[10px] font-mono tracking-widest text-silver/50 ml-1">DRIVER_NAME</label>
-                <input 
-                  type="text" 
-                  className="w-full bg-[#111] border border-white/10 rounded-none p-4 font-mono text-sm text-white focus:outline-none focus:border-petronas focus:ring-1 focus:ring-petronas transition-all"
-                  placeholder="Your Name"
-                />
+            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold tracking-widest text-apple-gray uppercase ml-1">Name</label>
+                  <input
+                    type="text"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-apple-blue focus:ring-1 focus:ring-apple-blue transition-all"
+                    placeholder="Your Name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold tracking-widest text-apple-gray uppercase ml-1">Email</label>
+                  <input
+                    type="email"
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-apple-blue focus:ring-1 focus:ring-apple-blue transition-all"
+                    placeholder="name@company.com"
+                  />
+                </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-mono tracking-widest text-silver/50 ml-1">SECURE_CHANNEL (EMAIL)</label>
-                <input 
-                  type="email" 
-                  className="w-full bg-[#111] border border-white/10 rounded-none p-4 font-mono text-sm text-white focus:outline-none focus:border-petronas focus:ring-1 focus:ring-petronas transition-all"
-                  placeholder="name@company.com"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-mono tracking-widest text-silver/50 ml-1">TELEMETRY_DATA (MESSAGE)</label>
-                <textarea 
+              <div className="space-y-2">
+                <label className="text-xs font-bold tracking-widest text-apple-gray uppercase ml-1">Message</label>
+                <textarea
                   rows={4}
-                  className="w-full bg-[#111] border border-white/10 rounded-none p-4 font-sans text-sm text-white focus:outline-none focus:border-petronas focus:ring-1 focus:ring-petronas transition-all resize-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-3xl p-4 text-sm text-white focus:outline-none focus:border-apple-blue focus:ring-1 focus:ring-apple-blue transition-all resize-none"
                   placeholder="How can we collaborate?"
                 />
               </div>
 
-              <Button type="submit" size="lg" className="w-full bg-white text-obsidian hover:bg-petronas rounded-none font-mono tracking-widest group uppercase">
-                <Send className="mr-2 h-4 w-4 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-                Transmit payload
+              <Button type="submit" size="lg" className="w-full bg-foreground text-background hover:bg-apple-blue hover:text-white rounded-full font-bold tracking-tight py-6 text-lg transition-all duration-300">
+                <Send className="mr-2 h-5 w-5" />
+                Send Message
               </Button>
             </form>
           </motion.div>
-
-        </div>
+        </motion.div>
       </div>
     </section>
   );

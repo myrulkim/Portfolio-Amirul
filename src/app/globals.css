@@ -1,85 +1,67 @@
 @import "tailwindcss";
 
-@plugin "tailwindcss-animate";
+/* @plugin "tailwindcss-animate"; */
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* Fonts */
-  --font-sans: var(--font-titillium);
+  
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-jetbrains);
   
-  /* Petronas Theme Colors */
-  --color-petronas: #00A19B;
-  --color-silver: #C0C0C0;
+  --color-pure-black: #000000;
+  --color-midnight-gray: #161617;
+  --color-apple-blue: #0071e3;
+  --color-apple-gray: #86868b;
   --color-obsidian: #050505;
-  --color-carbon: #0D0D0D;
-  --color-cockpit: #111111;
+  --color-silver: #F5F5F7;
 
   --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  
-  /* Radix / Shadcn standard mapping */
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-
-  /* Custom animations */
-  --animate-pulse-teal: pulse-teal 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse-teal {
-  0%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(0, 161, 155, 0.5); }
-  50% { opacity: .5; text-shadow: 0 0 20px rgba(0, 161, 155, 0.8); }
+  --radius-3xl: 2rem;
+  --radius-2xl: 1.5rem;
 }
 
 :root {
-  --background: #050505;
-  --foreground: #C0C0C0;
-  --card: #0D0D0D;
-  --card-foreground: #C0C0C0;
-  --popover: #0D0D0D;
-  --popover-foreground: #C0C0C0;
-  --primary: #00A19B;
-  --primary-foreground: #050505;
-  --secondary: #111111;
-  --secondary-foreground: #C0C0C0;
-  --muted: #111111;
-  --muted-foreground: #888888;
-  --accent: #111111;
-  --accent-foreground: #00A19B;
-  --destructive: #FF3333;
-  --destructive-foreground: #FFFFFF;
-  --border: #1A1A1A;
-  --input: #1A1A1A;
-  --ring: #00A19B;
-  --radius: 0.5rem;
+  --background: #000000;
+  --foreground: #F5F5F7;
+  --card: #161617;
+  --card-foreground: #F5F5F7;
+  --popover: #161617;
+  --popover-foreground: #F5F5F7;
+  --primary: #0071e3;
+  --primary-foreground: #ffffff;
+  --secondary: #1d1d1f;
+  --secondary-foreground: #F5F5F7;
+  --muted: #1d1d1f;
+  --muted-foreground: #86868b;
+  --accent: #1d1d1f;
+  --accent-foreground: #0071e3;
+  --destructive: #ff3b30;
+  --destructive-foreground: #ffffff;
+  --border: #333336;
+  --input: #333336;
+  --ring: #0071e3;
+  --radius: 1rem;
 }
-
-/* We don't need a separate .dark mode block since the theme is forced dark */
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter), sans-serif;
   }
 
   /* Scrollbar */
@@ -90,25 +72,51 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #00A19B;
-    border-radius: 4px;
+    background: #333336;
+    border-radius: 8px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #86868b;
   }
   
   /* Selection */
   ::selection {
-    background: rgba(0, 161, 155, 0.3);
+    background: rgba(0, 113, 227, 0.4);
     color: #fff;
   }
 }
 
 @layer utilities {
-  .carbon-fiber {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 24px 24px;
-    background-color: var(--background);
+  .glass {
+    backdrop-filter: blur(24px);
+    background-color: rgba(22, 22, 23, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .glass {
-    @apply backdrop-blur-md bg-white/5 border border-white/10;
+  .mesh-bg {
+    background-image: radial-gradient(circle at 80% -20%, rgba(0, 113, 227, 0.15) 0%, transparent 40%),
+                      radial-gradient(circle at -20% 120%, rgba(134, 134, 139, 0.1) 0%, transparent 40%);
+    background-attachment: fixed;
+    background-color: var(--color-pure-black);
+  }
+  
+  .text-gradient-shimmer {
+    background: linear-gradient(
+      90deg,
+      #F5F5F7 0%,
+      #86868b 50%,
+      #F5F5F7 100%
+    );
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
   }
 }

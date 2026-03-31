@@ -7,7 +7,7 @@ export type SkillCategory = {
 
 export const skillsData: SkillCategory[] = [
   {
-    title: "ENGINE",
+    title: "Development Suite",
     skills: [
       { name: "Java", value: 90 },
       { name: "Python", value: 85 },
@@ -16,7 +16,7 @@ export const skillsData: SkillCategory[] = [
     ],
   },
   {
-    title: "CHASSIS",
+    title: "Frameworks & Apps",
     skills: [
       { name: "Spring Boot", value: 90 },
       { name: "Flutter", value: 85 },
@@ -25,7 +25,7 @@ export const skillsData: SkillCategory[] = [
     ],
   },
   {
-    title: "AERODYNAMICS",
+    title: "Quality & Workflow",
     skills: [
       { name: "Software Testing", value: 85 },
       { name: "JUnit/Selenium", value: 80 },

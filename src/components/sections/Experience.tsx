@@ -3,10 +3,13 @@
 import { motion } from "framer-motion";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
-export function Timeline() {
-  const { timeline: timelineData } = usePortfolioData();
+export function Experience() {
+  const { experience } = usePortfolioData();
+  
+  if (!experience || experience.length === 0) return null;
+
   return (
-    <section id="timeline" className="py-32 relative bg-pure-black overflow-hidden">
+    <section id="experience" className="py-32 relative bg-pure-black overflow-hidden border-t border-white/5">
       <div className="container px-4 md:px-6 relative z-10 max-w-5xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -15,10 +18,10 @@ export function Timeline() {
           className="mb-24 text-center space-y-4"
         >
           <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
-            Education.
+            Experience.
           </h2>
           <p className="text-apple-gray max-w-2xl mx-auto text-lg tracking-tight font-medium">
-            A chronological journey of academic growth and milestones.
+            Professional roles and industry impact.
           </p>
         </motion.div>
 
@@ -27,8 +30,8 @@ export function Timeline() {
           <div className="absolute left-4 md:left-[50%] top-0 bottom-0 w-[1px] bg-white/10 md:-ml-[0.5px]" />
 
           <div className="space-y-24">
-            {timelineData.map((item, index) => {
-              const isEven = index % 2 === 0;
+            {experience.map((item: any, index: number) => {
+              const isEven = index % 2 !== 0; // Flip sides compared to timeline
               return (
                 <div 
                   key={index}
@@ -52,7 +55,7 @@ export function Timeline() {
                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full md:w-[45%] pl-12 md:pl-0 z-10"
                   >
-                    <div className="space-y-4">
+                    <div className="space-y-4 glass p-8 rounded-3xl border border-white/5">
                       <div className="font-mono text-sm tracking-tight text-apple-blue font-bold">
                         {item.year}
                       </div>
@@ -61,12 +64,13 @@ export function Timeline() {
                         <h3 className="text-2xl font-bold tracking-tight text-white">
                           {item.title}
                         </h3>
-                        <h4 className="text-lg font-medium tracking-tight text-apple-gray">
-                          {item.institution}
+                        <h4 className="text-lg font-medium tracking-tight text-apple-gray flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-white/20" />
+                          {item.company}
                         </h4>
                       </div>
                       
-                      <p className="text-apple-gray/80 text-lg/relaxed tracking-tight font-normal max-w-lg">
+                      <p className="text-apple-gray/80 text-lg/relaxed tracking-tight font-normal">
                         {item.description}
                       </p>
                     </div>
