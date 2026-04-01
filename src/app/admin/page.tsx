@@ -396,7 +396,17 @@ export default function AdminDashboard() {
                                  <input type="range" min="0" max="100" value={skill.value} onChange={(e) => { const newS = [...skills]; newS[catIdx].skills[skillIdx].value = parseInt(e.target.value); setSkills(newS); }} className="w-full accent-apple-blue" />
                                  <span className="text-xs text-apple-gray w-8 font-mono">{skill.value}%</span>
                               </div>
-                              <Button variant="ghost" className="text-white/40 hover:text-white bg-transparent h-8 w-8 p-0 rounded-full" onClick={() => { const newS = [...skills]; newS[catIdx].skills = newS[catIdx].skills.filter((_: any, i: number) => i !== skillIdx); setSkills(newS); }}>×</Button>
+                              <Button 
+                                variant="ghost" 
+                                className="text-white/40 hover:text-white bg-transparent h-8 w-8 p-0 rounded-full" 
+                                onClick={() => { 
+                                  const newS = [...skills]; 
+                                  newS[catIdx].skills = newS[catIdx].skills.filter((_: any, i: number) => i !== skillIdx); 
+                                  setSkills(newS); 
+                                }}
+                              >
+                                x
+                              </Button>
                            </div>
                          ))}
                       </div>

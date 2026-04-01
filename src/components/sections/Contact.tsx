@@ -24,7 +24,7 @@ export function Contact() {
               Connect.
             </h2>
             <p className="text-apple-gray text-lg md:text-xl tracking-tight font-medium max-w-xl mx-auto leading-relaxed">
-              Whether you have a vision for a specific project or just want to discuss software engineering—I'm always open to new connections and interesting conversations.
+              Whether you have a vision for a specific project or just want to discuss software engineering—I&apos;m always open to new connections and interesting conversations.
             </p>
           </div>
 

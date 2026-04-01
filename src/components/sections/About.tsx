@@ -17,7 +17,7 @@ export function About() {
             About Me
           </h2>
           <h3 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white leading-tight">
-            I'm a passionate Software Engineering Student driven by curiosity and problem-solving.
+            I&apos;m a passionate Software Engineering Student driven by curiosity and problem-solving.
           </h3>
           <p className="max-w-2xl mx-auto text-xl text-apple-gray font-medium tracking-tight pt-8 leading-relaxed">
             With a deep appreciation for precision design, I strive to write clean, maintainable code that delivers robust and seamless digital experiences. Every project is an opportunity to learn, optimize, and build something exceptional.
