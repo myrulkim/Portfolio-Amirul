@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,10 @@ export default function AdminDashboard() {
 
   const { hero, timeline, experience, skills, projects, socials, isLoading, saveData, setHero, setTimeline, setExperience, setProjects, setSkills, setSocials } = usePortfolioData();
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    document.title = "Admin | Software Engineering";
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
