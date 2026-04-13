@@ -1,32 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
-  { name: "Home", href: "#hero" },
-  { name: "About", href: "#about" },
+  { name: "About Me", href: "#about" },
   { name: "Skills", href: "#skills" },
   { name: "Experience", href: "#experience" },
-  { name: "Education", href: "#timeline" },
   { name: "Projects", href: "#projects" },
+  { name: "Timeline", href: "#timeline" },
+  { name: "Contact", href: "#contact" },
 ];
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -38,70 +32,86 @@ export function Navigation() {
 
   return (
     <>
-      <motion.div
-        className="fixed top-0 left-0 right-0 h-[2px] bg-primary origin-left z-50 pointer-events-none"
-        style={{ scaleX }}
-      />
-      
-      {/* Spacer so the floating nav doesn't overlap absolutely everything if needed, but it's fixed anyway */}
-      <div className="h-24 w-full absolute top-0 left-0 pointer-events-none z-0" />
+      <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <motion.div
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className={cn(
+            "w-full max-w-5xl glass-pill rounded-full border border-white/10 shadow-3xl transition-all duration-500",
+            isScrolled ? "py-2 px-4 md:px-8" : "py-4 px-6 md:px-10"
+          )}
+        >
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center group">
+              <span className="text-2xl font-extrabold tracking-tighter bg-gradient-to-r from-primary to-liquid-cyan bg-clip-text text-transparent group-hover:opacity-80 transition-opacity">
+                Portfolio
+              </span>
+            </Link>
 
-      <header
-        className={cn(
-          "fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 rounded-full",
-          isScrolled
-            ? "glass py-3 px-6 shadow-2xl scale-100"
-            : "bg-transparent py-4 px-6 scale-105"
-        )}
-      >
-        <div className="flex items-center justify-between gap-6 md:gap-12">
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center space-x-8">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-sm font-bold uppercase tracking-[0.1em] text-white/60 hover:text-white transition-colors relative group"
+                >
+                  {link.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all duration-300 group-hover:w-full" />
+                </Link>
+              ))}
+            </nav>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium tracking-tight text-muted-foreground hover:text-foreground transition-colors relative group"
-              >
-                {link.name}
-                <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            {/* Hire Me Button */}
+            <div className="hidden md:block">
+              <Link href="#contact">
+                <Button size="sm" className="bg-primary text-black hover:bg-white rounded-full px-8 font-bold tracking-tight h-10 text-sm">
+                  Hire Me
+                </Button>
               </Link>
-            ))}
-          </nav>
+            </div>
 
-          {/* Mobile Toggle */}
-          <button
-            className="md:hidden text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
+            {/* Mobile Toggle */}
+            <button
+              className="md:hidden text-white/70 hover:text-white transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </motion.div>
       </header>
 
       {/* Mobile Nav Dropdown */}
-      {isMobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          className="md:hidden fixed top-24 left-4 right-4 z-40 glass rounded-3xl p-6 shadow-2xl border border-white/10"
-        >
-          <nav className="flex flex-col space-y-6 text-center">
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-lg font-medium tracking-tight text-muted-foreground hover:text-foreground transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="md:hidden fixed inset-4 top-24 z-40 glass rounded-[40px] border border-white/10 flex flex-col items-center justify-center p-6 shadow-4xl backdrop-blur-3xl"
+          >
+            <nav className="flex flex-col space-y-8 text-center">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="text-2xl font-bold tracking-tighter text-white/60 hover:text-white transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <Link href="#contact" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button className="bg-primary text-black rounded-full px-10 py-5 text-lg font-bold">
+                  Hire Me
+                </Button>
               </Link>
-            ))}
-          </nav>
-        </motion.div>
-      )}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

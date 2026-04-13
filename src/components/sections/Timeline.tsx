@@ -1,76 +1,68 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { GraduationCap, Award, Briefcase, Sparkles } from "lucide-react";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export function Timeline() {
-  const { timeline: timelineData } = usePortfolioData();
+  const { timeline } = usePortfolioData();
+  
   return (
-    <section id="timeline" className="py-32 relative bg-pure-black overflow-hidden">
-      <div className="container px-4 md:px-6 relative z-10 max-w-5xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-24 text-center space-y-4"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground">
-            Education.
+    <section id="timeline" className="py-32 relative bg-transparent overflow-hidden">
+      <div className="container px-6 relative z-10 max-w-7xl mx-auto">
+        <div className="mb-24 text-center">
+          <span className="text-secondary font-bold tracking-[0.4em] uppercase text-xs">
+            The Journey
+          </span>
+          <h2 className="text-6xl md:text-8xl font-bold tracking-tighter mt-2 text-white">
+            Timeline
           </h2>
-          <p className="text-apple-gray max-w-2xl mx-auto text-lg tracking-tight font-medium">
-            A chronological journey of academic growth and milestones.
-          </p>
-        </motion.div>
+        </div>
 
-        <div className="relative">
-          {/* Vertical Thread - 1px thin */}
-          <div className="absolute left-4 md:left-[50%] top-0 bottom-0 w-[1px] bg-white/10 md:-ml-[0.5px]" />
+        <div className="relative max-w-5xl mx-auto py-12">
+          {/* Vertical Line */}
+          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-primary via-secondary to-transparent opacity-20" />
 
           <div className="space-y-24">
-            {timelineData.map((item, index) => {
+            {timeline.map((item, index) => {
               const isEven = index % 2 === 0;
               return (
-                <div 
-                  key={index}
-                  className={`relative flex items-start justify-start md:justify-between w-full ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                >
-                  <div className="hidden md:block w-[45%]" /> {/* Spacer */}
+                <div key={index} className="relative flex flex-col md:flex-row items-start md:items-center">
+                  {/* Timeline Node */}
+                  <div className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-black border-2 ${index % 3 === 0 ? 'border-primary shadow-[0_0_15px_rgba(199,153,255,0.5)]' : index % 3 === 1 ? 'border-secondary shadow-[0_0_15px_rgba(74,248,227,0.5)]' : 'border-tertiary shadow-[0_0_15px_rgba(255,108,149,0.5)]'} z-20`} />
                   
-                  {/* Glowing Node */}
-                  <motion.div 
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
-                    className="absolute left-[12px] md:left-[50%] w-3 h-3 rounded-full bg-apple-blue md:transform md:-translate-x-1/2 z-20 shadow-[0_0_15px_#0071e3]"
-                  />
+                  {/* Content Container */}
+                  <div className={`md:w-1/2 ${isEven ? 'md:pr-24 text-left md:text-right pl-20 md:pl-0' : 'md:hidden pl-20'}`}>
+                    {isEven && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                      >
+                        <span className={`font-bold text-xs tracking-[0.2em] uppercase ${index % 3 === 0 ? 'text-primary' : index % 3 === 1 ? 'text-secondary' : 'text-tertiary'}`}>
+                          {item.year}
+                        </span>
+                        <h4 className="text-2xl font-bold text-white mt-2 tracking-tight">{item.title}</h4>
+                        <p className="text-apple-gray text-base mt-2 font-medium leading-relaxed">{item.institution}</p>
+                      </motion.div>
+                    )}
+                  </div>
 
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                    className="w-full md:w-[45%] pl-12 md:pl-0 z-10"
-                  >
-                    <div className="space-y-4">
-                      <div className="font-mono text-sm tracking-tight text-apple-blue font-bold">
-                        {item.year}
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <h3 className="text-2xl font-bold tracking-tight text-white">
-                          {item.title}
-                        </h3>
-                        <h4 className="text-lg font-medium tracking-tight text-apple-gray">
-                          {item.institution}
-                        </h4>
-                      </div>
-                      
-                      <p className="text-apple-gray/80 text-lg/relaxed tracking-tight font-normal max-w-lg">
-                        {item.description}
-                      </p>
-                    </div>
-                  </motion.div>
+                  <div className={`md:w-1/2 ${!isEven ? 'md:pl-24 text-left pl-20' : 'hidden md:block'}`}>
+                    {!isEven && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                      >
+                        <span className={`font-bold text-xs tracking-[0.2em] uppercase ${index % 3 === 0 ? 'text-primary' : index % 3 === 1 ? 'text-secondary' : 'text-tertiary'}`}>
+                          {item.year}
+                        </span>
+                        <h4 className="text-2xl font-bold text-white mt-2 tracking-tight">{item.title}</h4>
+                        <p className="text-apple-gray text-base mt-2 font-medium leading-relaxed">{item.institution}</p>
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
               );
             })}

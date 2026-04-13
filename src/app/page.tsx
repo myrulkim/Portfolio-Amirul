@@ -8,13 +8,13 @@ import { Contact } from "@/components/sections/Contact";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-pure-black selection:bg-apple-blue/30 selection:text-white">
+    <div className="flex flex-col min-h-screen bg-transparent">
       <Hero />
       <About />
       <Skills />
       <Experience />
-      <Timeline />
       <Projects />
+      <Timeline />
       <Contact />
     </div>
   );

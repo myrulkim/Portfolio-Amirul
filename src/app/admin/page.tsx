@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { 
+  ExperienceItem, 
+  EducationItem, 
+  ProjectItem, 
+  SkillCategory,
+  SettingsData 
+} from "@/types/portfolio";
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,8 +20,68 @@ export default function AdminDashboard() {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("hero");
 
-  const { hero, timeline, experience, skills, projects, socials, isLoading, saveData, setHero, setTimeline, setExperience, setProjects, setSkills, setSocials } = usePortfolioData();
+  const { hero, timeline, experience, skills, projects, socials, about, settings, isLoading, saveData, setHero, setTimeline, setExperience, setProjects, setSkills, setSocials, setAbout, setSettings } = usePortfolioData();
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'profile' | 'cv') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    console.log(`Starting upload for ${type}:`, file.name);
+    setIsUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${type}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to 'portfolio' bucket
+      const { data, error } = await supabase.storage
+        .from('portfolio')
+        .upload(filePath, file, {
+          upsert: true,
+          cacheControl: '3600'
+        });
+
+      if (error) {
+        console.error("Upload error details:", error);
+        if (error.message.includes('bucket not found')) {
+          alert("Error: 'portfolio' storage bucket not found. Please create it in your Supabase dashboard and set it to 'Public'.");
+        } else {
+          alert("Error uploading file: " + error.message);
+        }
+        return;
+      }
+
+      console.log("File uploaded successfully:", data);
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio')
+        .getPublicUrl(filePath);
+
+      console.log("Generated Public URL:", publicUrl);
+
+      if (type === 'profile') {
+        const updatedHero = { ...hero, profile_image: publicUrl };
+        setHero(updatedHero);
+        // Auto-save to database
+        await saveData('hero', updatedHero);
+      } else {
+        const updatedSettings = { ...settings, cv_url: publicUrl };
+        setSettings(updatedSettings);
+        // Auto-save to database
+        await saveData('settings', updatedSettings);
+      }
+      
+      alert(`Success! ${type === 'profile' ? 'Profile image' : 'Resume'} has been uploaded and saved.`);
+    } catch (err) {
+      console.error("Upload failed exception:", err);
+      alert("Something went wrong during upload. Check console for details.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   useEffect(() => {
     document.title = "Admin | Software Engineering";
@@ -33,6 +101,20 @@ export default function AdminDashboard() {
     const success = await saveData('hero', hero);
     setIsSaving(false);
     if (success) alert("Hero data saved to Supabase!");
+  };
+
+  const handleSaveAbout = async () => {
+    setIsSaving(true);
+    const success = await saveData('about', about);
+    setIsSaving(false);
+    if (success) alert("About data saved to Supabase!");
+  };
+
+  const handleSaveSettings = async () => {
+    setIsSaving(true);
+    const success = await saveData('settings', settings);
+    setIsSaving(false);
+    if (success) alert("Site settings saved to Supabase!");
   };
 
   const handleSaveTimeline = async () => {
@@ -131,7 +213,7 @@ export default function AdminDashboard() {
 
       {/* Tabs */}
       <div className="flex space-x-2 mb-8 border-b border-white/10 pb-4 overflow-x-auto">
-        {['hero', 'socials', 'experience', 'education', 'projects', 'skills'].map((tab) => (
+        {['hero', 'about', 'socials', 'experience', 'education', 'projects', 'skills', 'settings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -177,6 +259,24 @@ export default function AdminDashboard() {
                       className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Profession (e.g. Software Engineering)</label>
+                    <input 
+                      value={hero.profession}
+                      onChange={(e) => setHero({...hero, profession: e.target.value})}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Specialization (e.g. Full Stack Developer)</label>
+                    <input 
+                      value={hero.specialization}
+                      onChange={(e) => setHero({...hero, specialization: e.target.value})}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors"
+                    />
+                  </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-apple-gray mb-2">Subtitle (Use \n for new lines)</label>
@@ -187,11 +287,79 @@ export default function AdminDashboard() {
                       className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors resize-none"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Profile Image</label>
+                    <div className="flex gap-4 items-center">
+                       <div className="flex-1">
+                          <input 
+                            value={hero.profile_image}
+                            onChange={(e) => setHero({...hero, profile_image: e.target.value})}
+                            placeholder="URL Gambar (atau muat naik di sebelah)"
+                            className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors text-sm"
+                          />
+                       </div>
+                       <div className="relative">
+                          <input 
+                            type="file" 
+                            onChange={(e) => handleFileUpload(e, 'profile')}
+                            className="hidden" 
+                            id="profile-upload"
+                            accept="image/*"
+                          />
+                          <label 
+                            htmlFor="profile-upload" 
+                            className={`cursor-pointer px-6 py-3 rounded-xl border border-white/10 glass flex items-center gap-2 text-sm font-bold hover:border-white/20 transition-all ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                          >
+                            {isUploading ? "Uploading..." : "Upload File"}
+                          </label>
+                       </div>
+                    </div>
+                    <p className="text-[10px] text-apple-gray mt-2 ml-1 italic">Dapatkan link gambar dari Unsplash atau muat naik dari komputer anda.</p>
+                  </div>
                 </div>
 
                 <div className="pt-6">
                   <Button 
                     onClick={handleSaveHero} 
+                    disabled={isSaving}
+                    className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium"
+                  >
+                    {isSaving ? "Saving..." : "Save to Supabase"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* ABOUT SECTION EDITOR */}
+            {activeTab === 'about' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h3 className="text-2xl font-bold tracking-tight mb-6">About Me Content</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Main Headline</label>
+                    <input 
+                      value={about.headline}
+                      onChange={(e) => setAbout({...about, headline: e.target.value})}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Brief Description</label>
+                    <textarea 
+                      value={about.description}
+                      onChange={(e) => setAbout({...about, description: e.target.value})}
+                      rows={5}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors resize-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-6">
+                  <Button 
+                    onClick={handleSaveAbout} 
                     disabled={isSaving}
                     className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium"
                   >
@@ -255,7 +423,7 @@ export default function AdminDashboard() {
                 </div>
                 
                 <div className="space-y-6">
-                  {timeline.map((item: any, idx: number) => (
+                  {timeline.map((item: EducationItem, idx: number) => (
                     <div key={idx} className="bg-[#1d1d1f] p-6 rounded-2xl border border-white/5 space-y-4">
                       <div className="flex gap-4">
                         <input value={item.year} onChange={(e) => { const newT = [...timeline]; newT[idx].year = e.target.value; setTimeline(newT); }} placeholder="Year" className="w-1/3 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-apple-blue transition-colors" />
@@ -269,7 +437,7 @@ export default function AdminDashboard() {
                           <option value="in-progress">In Progress</option>
                           <option value="planned">Planned</option>
                         </select>
-                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newT = timeline.filter((_: any, i: number) => i !== idx); setTimeline(newT); }}>Remove</Button>
+                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newT = timeline.filter((_: EducationItem, i: number) => i !== idx); setTimeline(newT); }}>Remove</Button>
                       </div>
                     </div>
                   ))}
@@ -292,7 +460,7 @@ export default function AdminDashboard() {
                 </div>
                 
                 <div className="space-y-6">
-                  {experience.map((item: any, idx: number) => (
+                  {experience.map((item: ExperienceItem, idx: number) => (
                     <div key={idx} className="bg-[#1d1d1f] p-6 rounded-2xl border border-white/5 space-y-4">
                       <div className="flex gap-4">
                         <input value={item.year} onChange={(e) => { const newE = [...experience]; newE[idx].year = e.target.value; setExperience(newE); }} placeholder="Duration/Year" className="w-1/3 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-apple-blue transition-colors" />
@@ -306,7 +474,7 @@ export default function AdminDashboard() {
                           <option value="in-progress">In Progress</option>
                           <option value="planned">Planned</option>
                         </select>
-                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newE = experience.filter((_: any, i: number) => i !== idx); setExperience(newE); }}>Remove</Button>
+                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newE = experience.filter((_: ExperienceItem, i: number) => i !== idx); setExperience(newE); }}>Remove</Button>
                       </div>
                     </div>
                   ))}
@@ -329,7 +497,7 @@ export default function AdminDashboard() {
                 </div>
                 
                 <div className="space-y-6">
-                  {projects.map((project: any, idx: number) => (
+                  {projects.map((project: ProjectItem, idx: number) => (
                     <div key={idx} className="bg-[#1d1d1f] p-6 rounded-2xl border border-white/5 space-y-4">
                       <div className="flex gap-4">
                         <input value={project.title} onChange={(e) => { const newP = [...projects]; newP[idx].title = e.target.value; setProjects(newP); }} placeholder="Project Title" className="w-2/3 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-apple-blue font-bold text-lg" />
@@ -358,7 +526,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="flex justify-end pt-2">
-                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newP = projects.filter((_: any, i: number) => i !== idx); setProjects(newP); }}>Remove Project</Button>
+                        <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newP = projects.filter((_: ProjectItem, i: number) => i !== idx); setProjects(newP); }}>Remove Project</Button>
                       </div>
                     </div>
                   ))}
@@ -381,19 +549,19 @@ export default function AdminDashboard() {
                 </div>
                 
                 <div className="space-y-6">
-                  {skills.map((category: any, catIdx: number) => (
+                  {skills.map((category: SkillCategory, catIdx: number) => (
                     <div key={catIdx} className="bg-[#1d1d1f] p-6 rounded-2xl border border-white/5 space-y-4">
                       
                       <div className="flex justify-between items-center bg-black/30 p-2 rounded-xl border border-white/5">
                         <input value={category.title} onChange={(e) => { const newS = [...skills]; newS[catIdx].title = e.target.value; setSkills(newS); }} placeholder="Category Title" className="w-1/2 bg-transparent border-none px-4 py-2 text-white font-bold focus:outline-none" />
                         <div className="flex gap-2">
                            <Button variant="ghost" className="text-apple-blue hover:text-white hover:bg-white/10 h-8 px-3 rounded-full" onClick={() => { const newS = [...skills]; newS[catIdx].skills.push({name: "New Skill", value: 50}); setSkills(newS); }}>+ Add Skill</Button>
-                           <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newS = skills.filter((_: any, i: number) => i !== catIdx); setSkills(newS); }}>Remove Category</Button>
+                           <Button variant="ghost" className="text-red-500 hover:text-red-400 hover:bg-red-500/10 h-8 px-3 rounded-full" onClick={() => { const newS = skills.filter((_: SkillCategory, i: number) => i !== catIdx); setSkills(newS); }}>Remove Category</Button>
                         </div>
                       </div>
 
                       <div className="pl-4 space-y-3 mt-4 border-l border-white/10">
-                         {category.skills.map((skill: any, skillIdx: number) => (
+                         {category.skills.map((skill, skillIdx) => (
                            <div key={skillIdx} className="flex gap-4 items-center">
                               <input value={skill.name} onChange={(e) => { const newS = [...skills]; newS[catIdx].skills[skillIdx].name = e.target.value; setSkills(newS); }} placeholder="Skill Name" className="w-1/2 bg-black/50 border border-white/10 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-apple-blue transition-colors text-sm" />
                               <div className="flex items-center gap-2 w-1/3">
@@ -405,7 +573,7 @@ export default function AdminDashboard() {
                                 className="text-white/40 hover:text-white bg-transparent h-8 w-8 p-0 rounded-full" 
                                 onClick={() => { 
                                   const newS = [...skills]; 
-                                  newS[catIdx].skills = newS[catIdx].skills.filter((_: any, i: number) => i !== skillIdx); 
+                                  newS[catIdx].skills = newS[catIdx].skills.filter((_, i) => i !== skillIdx); 
                                   setSkills(newS); 
                                 }}
                               >
@@ -421,6 +589,73 @@ export default function AdminDashboard() {
 
                 <div className="pt-6">
                   <Button onClick={handleSaveSkills} disabled={isSaving} className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium">
+                    {isSaving ? "Saving..." : "Save to Supabase"}
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* SETTINGS SECTION EDITOR */}
+            {activeTab === 'settings' && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <h3 className="text-2xl font-bold tracking-tight mb-6">Global Site Settings</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">Download Resume (CV)</label>
+                    <div className="flex gap-4 items-center">
+                       <div className="flex-1">
+                          <input 
+                            value={settings.cv_url}
+                            onChange={(e) => setSettings({...settings, cv_url: e.target.value})}
+                            placeholder="URL Resume (atau muat naik di sebelah)"
+                            className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors text-sm"
+                          />
+                       </div>
+                       <div className="relative">
+                          <input 
+                            type="file" 
+                            onChange={(e) => handleFileUpload(e, 'cv')}
+                            className="hidden" 
+                            id="cv-upload"
+                            accept=".pdf,.doc,.docx"
+                          />
+                          <label 
+                            htmlFor="cv-upload" 
+                            className={`cursor-pointer px-6 py-3 rounded-xl border border-white/10 glass flex items-center gap-2 text-sm font-bold hover:border-white/20 transition-all ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
+                          >
+                            {isUploading ? "Uploading..." : "Upload File"}
+                          </label>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">SEO Site Title</label>
+                    <input 
+                      value={settings.site_title}
+                      onChange={(e) => setSettings({...settings, site_title: e.target.value})}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-apple-gray mb-2">SEO Meta Description</label>
+                    <textarea 
+                      value={settings.site_description}
+                      onChange={(e) => setSettings({...settings, site_description: e.target.value})}
+                      rows={3}
+                      className="w-full bg-[#1d1d1f] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-apple-blue transition-colors resize-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-6">
+                  <Button 
+                    onClick={handleSaveSettings} 
+                    disabled={isSaving}
+                    className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium"
+                  >
                     {isSaving ? "Saving..." : "Save to Supabase"}
                   </Button>
                 </div>

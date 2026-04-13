@@ -4,22 +4,44 @@ import { timelineData as initialTimelineData } from '@/data/timeline';
 import { skillsData as initialSkillsData } from '@/data/skills';
 import { projectsData as initialProjectsData } from '@/data/projects';
 import { experienceData as initialExperienceData } from '@/data/experience';
+import { 
+  HeroData, 
+  SocialsData, 
+  ExperienceItem, 
+  EducationItem, 
+  SkillCategory, 
+  ProjectItem, 
+  AboutData,
+  SettingsData
+} from '@/types/portfolio';
 
 // Fetch specific data from Supabase, or fall back to default
 export function usePortfolioData() {
-  const [timeline, setTimeline] = useState(initialTimelineData); // Education
-  const [experience, setExperience] = useState<any[]>(initialExperienceData);
-  const [skills, setSkills] = useState(initialSkillsData);
-  const [projects, setProjects] = useState(initialProjectsData);
-  const [hero, setHero] = useState({
+  const [timeline, setTimeline] = useState<EducationItem[]>(initialTimelineData); // Education
+  const [experience, setExperience] = useState<ExperienceItem[]>(initialExperienceData);
+  const [skills, setSkills] = useState<SkillCategory[]>(initialSkillsData);
+  const [projects, setProjects] = useState<ProjectItem[]>(initialProjectsData);
+  const [hero, setHero] = useState<HeroData>({
     title1: "MUHAMMAD",
     title2: "AMIRUL HAKIM",
-    subtitle: "Software Engineering Student.\nBuilding precision-driven applications with optical clarity."
+    profession: "Software Engineering",
+    specialization: "Full Stack Developer | Cloud & Automation",
+    subtitle: "I build scalable software solutions, modern web applications, and automation tools that improve developer workflows and user experiences.",
+    profile_image: ""
   });
-  const [socials, setSocials] = useState({
+  const [socials, setSocials] = useState<SocialsData>({
     email: "amirulhakim6396@gmail.com",
     linkedin: "https://linkedin.com",
     github: "https://github.com"
+  });
+  const [about, setAbout] = useState<AboutData>({
+    headline: "I'm a passionate Software Engineering Student driven by curiosity and problem-solving.",
+    description: "With a deep appreciation for precision design, I strive to write clean, maintainable code that delivers robust and seamless digital experiences. Every project is an opportunity to learn, optimize, and build something exceptional."
+  });
+  const [settings, setSettings] = useState<SettingsData>({
+    cv_url: "",
+    site_title: "Amirul | Software Engineer",
+    site_description: "Senior Product Design & Software Engineering Portfolio"
   });
   
   const [isLoading, setIsLoading] = useState(true);
@@ -28,15 +50,11 @@ export function usePortfolioData() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        // We'll fetch from a generic 'portfolio_content' table
-        // We'll expect rows with 'section' column (hero, timeline, skills, projects)
-        // and a 'data' JSONB column.
         const { data, error } = await supabase
           .from('portfolio_content')
           .select('section, data');
           
         if (error) {
-          // If table doesn't exist yet or other error, it just falls back to initial data array
           console.warn("Supabase fetch error (expected if tables are not initialized):", error.message);
           return;
         }
@@ -59,6 +77,12 @@ export function usePortfolioData() {
 
           const socialsRow = data.find(r => r.section === 'socials');
           if (socialsRow?.data) setSocials(socialsRow.data);
+
+          const aboutRow = data.find(r => r.section === 'about');
+          if (aboutRow?.data) setAbout(aboutRow.data);
+
+          const settingsRow = data.find(r => r.section === 'settings');
+          if (settingsRow?.data) setSettings(settingsRow.data);
         }
       } catch (err) {
         console.error("Failed to load portfolio data from Supabase", err);
@@ -71,7 +95,10 @@ export function usePortfolioData() {
   }, []);
 
   // Save specific section data to Supabase
-  const saveData = async (section: string, payload: any) => {
+  const saveData = async (
+    section: string, 
+    payload: HeroData | SocialsData | ExperienceItem[] | EducationItem[] | SkillCategory[] | ProjectItem[] | AboutData | SettingsData
+  ) => {
     try {
       const { error } = await supabase
         .from('portfolio_content')
@@ -88,5 +115,5 @@ export function usePortfolioData() {
     }
   };
 
-  return { hero, timeline, experience, skills, projects, socials, isLoading, saveData, setHero, setTimeline, setExperience, setSkills, setProjects, setSocials };
+  return { hero, timeline, experience, skills, projects, socials, about, settings, isLoading, saveData, setHero, setTimeline, setExperience, setSkills, setProjects, setSocials, setAbout, setSettings };
 }
