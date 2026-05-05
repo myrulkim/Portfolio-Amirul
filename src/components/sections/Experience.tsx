@@ -1,55 +1,61 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Terminal, Layers, CheckCircle2 } from "lucide-react";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
 
 export function Experience() {
   const { experience } = usePortfolioData();
   
   return (
-    <section id="experience" className="py-32 relative bg-transparent overflow-hidden">
-      <div className="container px-6 relative z-10 max-w-7xl mx-auto">
+    <section id="experience" className="py-40 relative bg-transparent overflow-hidden">
+      <div className="container px-6 relative z-10 mx-auto max-w-5xl">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-16"
+          transition={{ duration: 0.8 }}
+          className="mb-24"
         >
-          <h2 className="text-6xl md:text-8xl font-bold tracking-tighter text-white">
-            Experience
+          <span className="text-gray-500 font-bold tracking-[0.4em] uppercase text-xs">Professional Path</span>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 text-white">
+            Experience.
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="relative space-y-12">
+          {/* Vertical Timeline Line */}
+          <div className="absolute left-[7px] top-0 bottom-0 w-[1px] bg-white/10" />
+
           {experience.map((item, index) => (
             <motion.div 
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.8, 
-                delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1]
-              }}
-              className="glass-card rounded-[32px] p-8 hover:bg-white/5 transition-all duration-500 group border border-white/5"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: index * 0.1 }}
+              className="relative pl-12 group"
             >
-              <div className="flex justify-between items-start mb-8">
-                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-primary/30 transition-colors">
-                  {index % 2 === 0 ? <Terminal className="text-primary" size={28} /> : <Layers className="text-secondary" size={28} />}
-                </div>
-                <span className="px-5 py-2 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wider border border-primary/20">
-                  {item.year}
-                </span>
+              {/* Glowing Dot Indicator */}
+              <div className="absolute left-0 top-2 w-[15px] h-[15px] rounded-full bg-[#050505] border-2 border-white/20 z-10 group-hover:border-white transition-colors duration-500">
+                <div className="absolute inset-0 rounded-full bg-white/20 blur-[4px] group-hover:bg-white/40 transition-all duration-500" />
               </div>
-              <h3 className="text-3xl font-bold text-white mb-2 tracking-tight">{item.title}</h3>
-              <p className="text-primary/80 font-bold text-sm mb-6 tracking-wide uppercase">{item.company}</p>
-              
-              <div className="flex gap-4 text-apple-gray text-lg leading-relaxed">
-                <CheckCircle2 className="text-primary flex-shrink-0 mt-1" size={18} />
-                <p>{item.description}</p>
+
+              {/* Experience Card */}
+              <div className="space-y-4 pb-12">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
+                    {item.year}
+                  </span>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-lg font-medium text-gray-400">
+                    {item.company}
+                  </p>
+                </div>
+                <p className="text-base text-gray-500 leading-relaxed max-w-2xl">
+                  {item.description}
+                </p>
               </div>
             </motion.div>
           ))}

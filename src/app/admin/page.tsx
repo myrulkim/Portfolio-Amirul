@@ -117,7 +117,7 @@ export default function AdminDashboard() {
     if (success) alert("Site settings saved to Supabase!");
   };
 
-  const handleSaveTimeline = async () => {
+  const handleSaveEducation = async () => {
     setIsSaving(true);
     const success = await saveData('timeline', timeline);
     setIsSaving(false);
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-pure-black px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#050505] px-4">
         <div className="text-center mb-10 space-y-2">
           <h1 className="text-4xl font-bold tracking-tighter text-white">Welcome Amirul Hakim.</h1>
           <p className="text-apple-gray font-medium tracking-tight">Sign in to manage your portfolio</p>
@@ -190,9 +190,12 @@ export default function AdminDashboard() {
               </button>
             </div>
           </div>
-          <Button type="submit" size="lg" className="w-full bg-apple-blue hover:bg-apple-blue/90 text-white rounded-full font-bold h-14 text-lg mt-4">
+          <button 
+            type="submit" 
+            className="w-full bg-white hover:bg-gray-200 text-black rounded-full font-bold h-14 text-lg mt-4 transition-colors"
+          >
             Continue
-          </Button>
+          </button>
         </form>
       </div>
     );
@@ -212,18 +215,18 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-2 mb-8 border-b border-white/10 pb-4 overflow-x-auto">
+      <div className="flex space-x-3 mb-10 overflow-x-auto pb-4 no-scrollbar">
         {['hero', 'about', 'socials', 'experience', 'education', 'projects', 'skills', 'settings'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 rounded-full tracking-tight font-medium transition-colors ${
+            className={`px-6 py-2 rounded-full text-[10px] uppercase tracking-[0.2em] font-bold transition-all border whitespace-nowrap ${
               activeTab === tab 
-                ? 'bg-apple-blue text-white' 
-                : 'bg-white/5 text-apple-gray hover:text-white'
+                ? 'bg-white text-black border-white' 
+                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30'
             }`}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab}
           </button>
         ))}
       </div>
@@ -444,7 +447,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="pt-6">
-                  <Button onClick={handleSaveTimeline} disabled={isSaving} className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium">
+                  <Button onClick={handleSaveEducation} disabled={isSaving} className="bg-white text-black hover:bg-gray-200 rounded-full px-8 font-medium">
                     {isSaving ? "Saving..." : "Save to Supabase"}
                   </Button>
                 </div>

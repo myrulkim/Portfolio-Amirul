@@ -2,89 +2,101 @@
 
 import { motion } from "framer-motion";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
-import { ProjectCard } from "../ui/ProjectCard";
-import { useState } from "react";
-
-const CATEGORIES = ["ALL", "MOBILE", "WEB", "UI/UX"];
+import { IconBrandGithub, IconExternalLink } from "@tabler/icons-react";
+import Image from "next/image";
 
 export function Projects() {
   const { projects: projectsData } = usePortfolioData();
-  const [activeCategory, setActiveCategory] = useState("ALL WORKS");
 
   return (
-    <section id="projects" className="py-32 relative bg-transparent overflow-hidden">
-      <div className="container px-4 md:px-6 relative z-10 mx-auto max-w-7xl">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-4"
-          >
-            <span className="text-primary font-bold tracking-[0.4em] uppercase text-xs">Collection</span>
-            <h2 className="text-6xl md:text-8xl font-bold tracking-tighter text-white">
-              My Projects
-            </h2>
-            <p className="max-w-xl text-apple-gray text-xl tracking-tight font-medium">
-              A curation of high-fidelity digital experiences, where liquid geometry meets functional elegance.
-            </p>
-          </motion.div>
+    <section id="projects" className="py-40 relative bg-transparent overflow-hidden">
+      <div className="container px-6 relative z-10 mx-auto max-w-7xl">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-32"
+        >
+          <span className="text-gray-500 font-bold tracking-[0.4em] uppercase text-xs">Featured Work</span>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 text-white">
+            Projects.
+          </h2>
+        </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-end gap-6"
-          >
-            <a href="#" className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-white/50 hover:text-white transition-colors group">
-              Explore all projects
-              <motion.span
-                animate={{ x: [0, 5, 0] }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-              >
-                →
-              </motion.span>
-            </a>
-            <div className="flex flex-wrap gap-3">
-              {CATEGORIES.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-6 py-2 rounded-full text-xs font-bold tracking-widest transition-all border ${
-                    activeCategory === cat 
-                      ? "bg-white text-black border-white shadow-xl shadow-white/10" 
-                      : "bg-transparent text-white/50 border-white/10 hover:border-white/30"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="space-y-40">
           {projectsData.map((project, index) => (
             <motion.div 
-              key={project.id} 
-              initial={{ opacity: 0, y: 30 }}
+              key={project.id}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.8, 
-                delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1]
-              }}
-              className={`${
-                index === 0 ? "md:col-span-8 h-[400px] md:h-[600px]" : 
-                index === 1 ? "md:col-span-4 h-[400px] md:h-[600px]" :
-                index % 3 === 2 ? "md:col-span-4 h-[400px]" : 
-                "md:col-span-4 h-[400px]"
-              }`}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center"
             >
-              <ProjectCard project={project} index={index} />
+              {/* Left Column: Text Content */}
+              <div className={`space-y-8 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+                <div className="space-y-4">
+                  <h3 className="text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+                    {project.title}
+                  </h3>
+                  <p className="text-xl text-gray-400 leading-relaxed max-w-xl">
+                    {project.features[0] || "A high-performance digital solution focused on user experience and scalability."}
+                  </p>
+                </div>
+
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech) => (
+                    <span 
+                      key={tech}
+                      className="px-4 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap items-center gap-4 pt-4">
+                  <button 
+                    onClick={() => { if (project.github) window.open(project.github, '_blank') }}
+                    className="pill pill-outline flex items-center gap-2 font-bold text-sm"
+                  >
+                    <IconBrandGithub size={18} />
+                    Source Code
+                  </button>
+                  
+                  <button 
+                    onClick={() => { if (project.live) window.open(project.live, '_blank') }}
+                    className="pill bg-blue-600/20 text-blue-400 border border-blue-500/20 hover:bg-blue-600/30 flex items-center gap-2 font-bold text-sm"
+                  >
+                    <IconExternalLink size={18} />
+                    Live Demo
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Column: Visual Mockup */}
+              <div className={`${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+                <div className="relative group">
+                  {/* Soft glow behind mockup */}
+                  <div className="absolute -inset-10 bg-white/5 rounded-full blur-[100px] opacity-50 group-hover:opacity-80 transition-opacity duration-700" />
+                  
+                  {/* Image Container */}
+                  <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-white/5 to-transparent shadow-2xl">
+                    <Image 
+                      src={project.image || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200"} 
+                      alt={project.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    
+                    {/* Dark gradient overlay at bottom */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  </div>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

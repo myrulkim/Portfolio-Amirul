@@ -2,79 +2,113 @@
 
 import { motion } from "framer-motion";
 import { usePortfolioData } from "@/hooks/usePortfolioData";
-import { Terminal, Cpu, Globe, Database, Smartphone, GitBranch, Code2 } from "lucide-react";
-import { Skill } from "@/types/portfolio";
+import { 
+  IconBrandTypescript, 
+  IconBrandNextjs, 
+  IconBrandPython, 
+  IconBrandFlutter, 
+  IconBrandFirebase, 
+  IconBrandGit,
+  IconBrandTailwind,
+  IconBrandNodejs,
+  IconBrandReactNative,
+  IconBrandVercel,
+  IconDatabase,
+  IconCoffee,
+  IconTestPipe
+} from "@tabler/icons-react";
 
 export function Skills() {
   const { skills: skillsData } = usePortfolioData();
 
-  const getIcon = (title: string) => {
-    const t = title.toLowerCase();
-    if (t.includes('language')) return <Code2 size={24} className="text-primary" />;
-    if (t.includes('web') || t.includes('frontend')) return <Globe size={24} className="text-secondary" />;
-    if (t.includes('mobile')) return <Smartphone size={24} className="text-tertiary" />;
-    if (t.includes('backend') || t.includes('database')) return <Database size={24} className="text-primary" />;
-    if (t.includes('devops') || t.includes('tool')) return <GitBranch size={24} className="text-secondary" />;
-    return <Terminal size={24} className="text-primary" />;
+  // Flatten skills and map icons
+  const allSkills = skillsData.flatMap(category => 
+    category.skills.map(skill => ({
+      ...skill,
+      category: category.title
+    }))
+  );
+
+  const getIcon = (name: string) => {
+    const n = name.toLowerCase();
+    if (n.includes('typescript')) return <IconBrandTypescript size={32} className="text-[#3178C6]" />;
+    if (n.includes('next.js')) return <IconBrandNextjs size={32} className="text-white" />;
+    if (n.includes('python')) return <IconBrandPython size={32} className="text-[#3776AB]" />;
+    if (n.includes('flutter')) return <IconBrandFlutter size={32} className="text-[#02569B]" />;
+    if (n.includes('firebase')) return <IconBrandFirebase size={32} className="text-[#FFCA28]" />;
+    if (n.includes('git')) return <IconBrandGit size={32} className="text-[#F05032]" />;
+    if (n.includes('tailwind')) return <IconBrandTailwind size={32} className="text-[#06B6D4]" />;
+    if (n.includes('node')) return <IconBrandNodejs size={32} className="text-[#339933]" />;
+    if (n.includes('react')) return <IconBrandReactNative size={32} className="text-[#61DAFB]" />;
+    if (n.includes('vercel')) return <IconBrandVercel size={32} className="text-white" />;
+    if (n.includes('java')) return <IconCoffee size={32} className="text-[#ED8B00]" />;
+    if (n.includes('database')) return <IconDatabase size={32} className="text-blue-400" />;
+    if (n.includes('test') || n.includes('junit')) return <IconTestPipe size={32} className="text-red-400" />;
+    return <IconBrandNextjs size={32} className="text-white" />; // Fallback
   };
 
+  // Duplicate for infinite effect
+  const marqueeItems = [...allSkills, ...allSkills, ...allSkills];
+
   return (
-    <section id="skills" className="py-32 relative overflow-hidden bg-transparent">
-      <div className="container px-6 relative z-10 mx-auto max-w-7xl">
+    <section id="skills" className="py-40 relative overflow-hidden bg-transparent">
+      <div className="container px-6 relative z-10 mx-auto max-w-7xl mb-24 text-center">
         <motion.div 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-24 text-center"
+          transition={{ duration: 0.8 }}
         >
-          <span className="text-primary font-bold tracking-[0.4em] uppercase text-xs">Technical Skills</span>
-          <h2 className="text-6xl md:text-8xl font-bold tracking-tighter mt-2 text-white">
-            Skills
+          <span className="text-gray-500 font-bold tracking-[0.4em] uppercase text-xs">Technical Stack</span>
+          <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mt-4 text-white">
+            Expertise.
           </h2>
         </motion.div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {skillsData.map((category, idx) => (
+      {/* Marquee Container */}
+      <div className="relative flex overflow-hidden py-10 select-none cursor-grab active:cursor-grabbing">
+        <motion.div 
+          drag="x"
+          dragConstraints={{ left: -1000, right: 1000 }} // Large constraints to allow sliding
+          dragElastic={0.1}
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ 
+            ease: "linear", 
+            duration: 40, 
+            repeat: Infinity 
+          }}
+          whileTap={{ cursor: "grabbing" }}
+          className="flex gap-8 px-4 items-center"
+        >
+          {marqueeItems.map((skill, idx) => (
             <motion.div
-              key={category.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              key={`${skill.name}-${idx}`}
+              animate={{ y: [0, -8, 0] }}
               transition={{ 
-                duration: 0.8, 
-                delay: idx * 0.1,
-                ease: [0.22, 1, 0.36, 1]
+                duration: 4 + (idx % 2), 
+                repeat: Infinity, 
+                ease: "easeInOut",
+                delay: idx * 0.2
               }}
-              className="group"
+              className="flex-shrink-0 group"
             >
-              <div className="glass-card rounded-[32px] p-8 hover:bg-white/5 transition-all duration-500 group border border-white/5 h-full flex flex-col">
-                <div className="flex items-center gap-6 mb-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-primary/30 transition-colors duration-500">
-                    {getIcon(category.title)}
-                  </div>
-                  <h3 className="text-2xl font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">
-                    {category.title}
-                  </h3>
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full border border-white/5 bg-white/[0.02] flex flex-col items-center justify-center gap-2 transition-all duration-500 group-hover:border-white/20 group-hover:bg-white/[0.05] group-hover:scale-110">
+                <div className="transition-all duration-500 group-hover:scale-110 scale-90">
+                  {getIcon(skill.name)}
                 </div>
-
-                <div className="flex flex-wrap gap-3">
-                  {category.skills.map((skill: Skill) => (
-                    <div
-                      key={skill.name}
-                      className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-primary/20 transition-all duration-300 cursor-default group/pill hover:-translate-y-1"
-                    >
-                      <span className="text-xs font-bold tracking-tight text-apple-gray group-hover/pill:text-white transition-colors duration-300">
-                        {skill.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <span className="text-[9px] font-bold uppercase tracking-widest text-gray-600 group-hover:text-gray-300 transition-colors duration-500">
+                  {skill.name}
+                </span>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
+
+      {/* Edge Fades */}
+      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#050505] to-transparent z-10" />
+      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#050505] to-transparent z-10" />
     </section>
   );
 }
